@@ -23,34 +23,6 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
       eventsPerSecond: 0,
     },
   },
-  // Add fetch options with timeout
-  fetch: (url, options) => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-    
-    return fetch(url, {
-      ...options,
-      signal: controller.signal,
-      // Add cache control headers
-      headers: {
-        ...options?.headers,
-        'Cache-Control': 'max-age=300',
-      },
-    })
-      .then(response => {
-        clearTimeout(timeoutId);
-        return response;
-      })
-      .catch(error => {
-        clearTimeout(timeoutId);
-        console.warn('Supabase fetch error:', error);
-        // Return a mock response to prevent app crashes
-        return new Response(JSON.stringify({ error: 'Network error', fallback: true }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      });
-  },
 });
 
 // Cache for frequently accessed data
@@ -175,27 +147,6 @@ export const mockLocationCounts = {
   "Manchester": 8,
   "Birmingham": 6,
   "Edinburgh": 4
-};
-
-// Optimized fetch function with error handling and timeout
-export const fetchWithTimeout = async (
-  fetcher: () => Promise<any>,
-  timeout = 5000,
-  fallback: any = null
-) => {
-  try {
-    // Create a promise that rejects after timeout
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timed out')), timeout);
-    });
-    
-    // Race the fetch against the timeout
-    const result = await Promise.race([fetcher(), timeoutPromise]);
-    return result;
-  } catch (error) {
-    console.warn('Fetch error:', error);
-    return fallback;
-  }
 };
 
 // Improved error handling for Supabase queries

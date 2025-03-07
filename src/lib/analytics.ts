@@ -2,7 +2,7 @@ import ReactGA from 'react-ga4';
 
 // Initialize GA4 with your measurement ID
 export const initGA = () => {
-  ReactGA.initialize('G-DW644QXCZX'); // Replace with your actual GA4 measurement ID
+  ReactGA.initialize('G-XXXXXXXXXX'); // Replace with your actual GA4 measurement ID
 };
 
 // Track page views
@@ -39,9 +39,10 @@ export const trackSearch = (searchTerm: string, category?: string) => {
 };
 
 // Track errors
-export const trackError = (error: Error, componentStack?: string) => {
-  ReactGA.exception({
-    description: error.message,
-    fatal: true,
+export const trackError = (error: Error) => {
+  ReactGA.event({
+    category: 'Error',
+    action: 'error_occurred',
+    label: error.message,
   });
 };
