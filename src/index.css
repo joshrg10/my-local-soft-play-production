@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optimize font rendering */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Optimize image rendering */
+img {
+  image-rendering: auto;
+  content-visibility: auto;
+}
+
+/* Optimize animations */
+@layer utilities {
+  .animation-reduce {
+    @media (prefers-reduced-motion: reduce) {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+/* Loading spinner fade out transition */
+.loading-spinner {
+  transition: opacity 0.3s ease-out;
+}
+
+/* Optimize scrolling */
+html, body {
+  scroll-behavior: smooth;
+}
+
+/* Optimize for mobile */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Content visibility optimizations */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* Optimize image loading */
+@layer utilities {
+  .image-rendering-crisp {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Optimize text rendering for headings */
+h1, h2, h3, h4, h5, h6 {
+  text-rendering: optimizeLegibility;
+}
+
+/* Optimize layout shifts */
+.min-h-card {
+  min-height: 24rem;
+}
+
+/* Optimize for print */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Optimize for dark mode */
+@media (prefers-color-scheme: dark) {
+  .dark-mode-optimize {
+    background-color: #1a1a1a;
+    color: #f5f5f5;
+  }
+}
+
+/* Optimize focus styles */
+:focus {
+  outline: 2px solid rgba(236, 72, 153, 0.5);
+  outline-offset: 2px;
+}
+
+/* Optimize for reduced data */
+@media (prefers-reduced-data: reduce) {
+  img {
+    content-visibility: auto;
+  }
+}

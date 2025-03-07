@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/playground-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Find the best soft play areas for kids across the UK. Search by location, features, and age range.">
+    <title>My Local Soft Play - Find Kids Soft Play Areas Near You</title>
+    
+    <!-- Preconnect to critical domains -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+    <link rel="preconnect" href="https://gfyziwbrzfqfaktfmfjd.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Preload critical images -->
+    <link rel="preload" href="https://images.unsplash.com/photo-1596464716127-f2a82984de30?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80&auto=format&fit=crop&w=800&q=60" as="image" fetchpriority="high">
+    
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous"></noscript>
+    
+    <!-- Inline critical CSS -->
+    <style>
+      /* Critical CSS for initial render */
+      :root {
+        --pink-500: #ec4899;
+        --pink-600: #db2777;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100%;
+        background-color: #f9fafb;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        transition: opacity 0.3s ease-out;
+      }
+      
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid rgba(236, 72, 153, 0.1);
+        border-top-color: rgba(236, 72, 153, 1);
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Critical header styles */
+      .header {
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+      }
+      
+      .header-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+      }
+      
+      .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+      }
+      
+      .logo-highlight {
+        color: var(--pink-500);
+      }
+      
+      /* Hero section styles */
+      .hero {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1596464716127-f2a82984de30?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80&auto=format&fit=crop&w=800&q=60');
+        background-size: cover;
+        background-position: center;
+        padding: 4rem 1rem;
+        text-align: center;
+        color: white;
+      }
+      
+      .hero-container {
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+      
+      .hero-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+      
+      .hero-description {
+        font-size: 1.125rem;
+        max-width: 48rem;
+        margin: 0 auto 2rem;
+      }
+      
+      /* Search bar styles */
+      .search-container {
+        max-width: 64rem;
+        margin: 0 auto;
+      }
+      
+      .search-form {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+      
+      @media (min-width: 768px) {
+        .search-form {
+          flex-direction: row;
+        }
+        
+        .hero-title {
+          font-size: 3rem;
+        }
+      }
+      
+      .search-input-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+      }
+      
+      @media (min-width: 768px) {
+        .search-input-container {
+          border-bottom: none;
+          border-right: 1px solid #e5e7eb;
+        }
+      }
+      
+      .search-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+      }
+      
+      .search-button {
+        background-color: var(--pink-500);
+        color: white;
+        font-weight: 700;
+        padding: 1rem 2rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        white-space: nowrap;
+      }
+      
+      .search-button:hover {
+        background-color: var(--pink-600);
+      }
+    </style>
+    
+    <!-- Preload main script -->
+    <link rel="modulepreload" href="/src/main.tsx">
+  </head>
+  <body>
+    <div id="root">
+      <!-- Initial SSR-like HTML for critical content -->
+      <header class="header">
+        <div class="header-container">
+          <a href="/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play" style="color: #ec4899;">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span class="logo-text">My Local <span class="logo-highlight">Soft Play</span></span>
+          </a>
+        </div>
+      </header>
+      
+      <main>
+        <section class="hero">
+          <div class="hero-container">
+            <h1 class="hero-title">Find the best soft play areas for kids in the UK</h1>
+            <p class="hero-description">Discover fun, safe, and exciting soft play areas near you. Perfect for rainy days and family outings.</p>
+            
+            <div class="search-container">
+              <form class="search-form">
+                <div class="search-input-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search" style="color: #9ca3af; margin-right: 0.5rem;">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" placeholder="Search for soft play areas..." class="search-input">
+                </div>
+                <div class="search-input-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="color: #9ca3af; margin-right: 0.5rem;">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <input type="text" placeholder="City or Postcode" class="search-input">
+                </div>
+                <button type="submit" class="search-button">Search</button>
+              </form>
+            </div>
+          </div>
+        </section>
+      </main>
+      
+      <!-- Initial loading state -->
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
